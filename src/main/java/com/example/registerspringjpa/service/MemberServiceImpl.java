@@ -2,51 +2,76 @@ package com.example.registerspringjpa.service;
 
 
 import com.example.registerspringjpa.domain.Member;
-import com.example.registerspringjpa.repository.MemberDAO;
+import com.example.registerspringjpa.repository.MemberRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     @Autowired
-    private MemberDAO memberDAO;
+    private MemberRepository memberRepository;
 
 
     @Override
-    public int insertMember(Member member) throws Exception {
+    @Transactional
+    public int register(Member m) throws Exception {
 
-        return memberDAO.insertMember(member);
+        Member member = memberRepository.save(m);
+        return member != null ? 1 : 0;
     }
 
     @Override
-    public Member selectByNo(int no) throws Exception {
+    public Member read(Member member) throws Exception {
 
-        return memberDAO.selectByNo(no);
+        return memberRepository.getReferenceById(member.getNo());
     }
 
     @Override
-    public int updateMember(Member member) throws Exception {
-        return memberDAO.updateMember(member);
+    @Transactional
+    public int modify(Member m) throws Exception {
+        Member member = memberRepository.getReferenceById(m.getNo());
+        member.setName(m.getName());
+        member.setPassword(m.getPassword());
+        member.setAge(m.getAge());
+        return member != null? 1:0;
     }
 
     @Override
-    public int deleteMember(Member member) throws Exception {
-
-        return memberDAO.deleteMember(member);
+    @Transactional
+    public int remove(Member member) throws Exception {
+        int count = 1;
+        try{
+        memberRepository.deleteById(member.getNo());
+        }catch (Exception e){
+            log.info(e.toString());
+            count =0;
+        }
+        return count;
     }
 
     @Override
-    public List<Member> memberList() throws Exception {
+    public List<Member> list() throws Exception {
 
-        return memberDAO.memberList();
+        return memberRepository.findAll(Sort.by(Sort.Direction.DESC,"no"));
     }
 
-    public List<Member> searchMember(String type,String keyword) {
+    @Override
+    public List<Member> search(String type, String keyword) {
 
-        return memberDAO.searchMember(type,keyword);
+        if(type.equals("age")){
+            return memberRepository.findByAge(Integer.parseInt(keyword));
+        }else{
+            return memberRepository.findByNameContaining(keyword);
+        }
+
+
 
     }
 }

@@ -39,7 +39,7 @@ public class MemberController {
     public String postInfo(Member member){
         //todo db에 넣기
         try {
-            int count = memberService.insertMember(member);
+            int count = memberService.register(member);
             if(count > 0){
                 return "member/registerSuccess";
             }
@@ -53,7 +53,7 @@ public class MemberController {
         //todo db에서 받아와 모델로 넘겨주기
         List<Member> memberList;
         try {
-            memberList = memberService.memberList();
+            memberList = memberService.list();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -63,10 +63,12 @@ public class MemberController {
     }
 
     @GetMapping("/{no}")
-    public String memberDetail(@PathVariable int no, Model model){
+    public String memberDetail(@PathVariable long no, Model model){
+        Member temp = new Member();
+        temp.setNo(no);
         Member member;
         try {
-            member = memberService.selectByNo(no);
+            member = memberService.read(temp);
             if(member==null){
                 return "redirect:/member/memberList";
             }
@@ -81,10 +83,11 @@ public class MemberController {
 
     @GetMapping("/edit/{no}")
     public String edit(@PathVariable int no,Model model){
-        //todo no를 넘겨서 그에 대한 멤버 받아와서 model로넘기기
-        Member member;
+        Member member = null;
+        Member temp = new Member();
+        temp.setNo(no);
         try {
-            member = memberService.selectByNo(no);
+            member = memberService.read(temp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -96,7 +99,7 @@ public class MemberController {
     public String editPost(Member member){
         //todo db에 update
         try {
-            int count = memberService.updateMember(member);
+            int count = memberService.modify(member);
             if(count>0){
                 //수정 성공
                 return "member/main";
@@ -115,7 +118,7 @@ public class MemberController {
         Member member = new Member();
         member.setNo(no);
         try {
-            int count = memberService.deleteMember(member);
+            int count = memberService.remove(member);
             if(count>0){
                 log.info("삭제 성공");
                 return "member/main";
@@ -131,8 +134,8 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    public String search(Model model, Search search){
-        List<Member> memberList = memberService.searchMember(search.getType(),search.getKeyword());
+    public String search(Model model,String type, String keyword){
+        List<Member> memberList = memberService.search(type,keyword);
 
 
         model.addAttribute("memberList",memberList);

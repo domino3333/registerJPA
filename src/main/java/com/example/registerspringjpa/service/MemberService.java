@@ -7,14 +7,15 @@ import com.example.registerspringjpa.domain.Member;
 import java.util.List;
 
 interface MemberService {
-    int insertMember(Member member) throws Exception;
+    int register(Member member) throws Exception;
 
-    Member selectByNo(int no) throws Exception;
+    Member read(Member member) throws Exception;
 
-    int updateMember(Member member) throws Exception;
+    int modify(Member member) throws Exception;
 
-    int deleteMember(Member member) throws Exception;
+    int remove(Member member) throws Exception;
 
-    List<Member> memberList() throws Exception;
+    List<Member> list() throws Exception;
 
+    List<Member> search(String type, String keyword) throws Exception;
 }
