@@ -8,5 +8,4 @@ import java.util.List;
 public interface MemberRepository extends JpaRepository<Member,Long> {
     List<Member> findByAge(int age);
     List<Member> findByNameContaining(String keyword);
-    
 }
