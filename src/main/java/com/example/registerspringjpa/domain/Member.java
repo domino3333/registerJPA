@@ -12,6 +12,7 @@ sequenceName = "JPAMember_SEQ",
 @Table(name = "JPAMember")
 @Entity
 public class Member {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "JPABOARD_SEQ_GEN")
     @Column(name = "NO")
